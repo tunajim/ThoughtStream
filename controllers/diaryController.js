@@ -1,3 +1,4 @@
+import { mongoose } from "mongoose";
 import DiaryEntry from "../models/DiaryEntry.js";
 import { fetchWeather } from "./weatherController.js";
 
@@ -33,8 +34,36 @@ import { fetchWeather } from "./weatherController.js";
  * - Create a new `DiaryEntry` object and save it to the database
  * - Return a `201 Created` response with the new entry
  */
+
+// test user
+const testUser = new mongoose.Types.ObjectId();
+
 const createEntry = async (req, res) => {
-  // TODO: Implement the function
+  try {
+    // TODO: Implement the function
+    const { user, title, content, reflection, location, tags } =
+      req.body;
+
+
+    // fetch weather data if location is provided
+    const weatherData = location ? await fetchWeather(location) : null;
+
+    const newEntry = new DiaryEntry({
+      user: testUser,
+      title,
+      content,
+      reflection,
+      tags,
+      location,
+      weather: weatherData,
+    });
+
+    await newEntry.save();
+	res.status(201).json(newEntry);
+
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
 };
 
 /**
@@ -96,7 +125,6 @@ const getAllEntries = async (req, res) => {
 
     // Fetch filtered results and sort by newest first
     const entries = await DiaryEntry.find(filter).sort({ createdAt: -1 });
-	console.log(entries);
     res.status(200).json(entries);
   } catch (error) {
     res
