@@ -13,14 +13,17 @@ const diarySchema = new mongoose.Schema(
     },
     // User specified location (city, country)
     location: {
-      type: String,
-      required: true,
+      city: { type: String, required: true },
+      country: { type: String, required: true }
     },
     tags: { type: [String], default: [] },
     weather: {
       condition: { type: String }, // e.g., "Sunny", "Cloudy"
       temperature: { type: Number }, // Temperature in °F
-      location: { type: String }, // City, country - user specified
+      location: {
+        city: { type: String },
+        country: { type: String }
+      }, // City, country - user specified
     },
   },
   { timestamps: true } // Automatically adds createdAt & updatedAt

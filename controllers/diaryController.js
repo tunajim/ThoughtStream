@@ -2,27 +2,6 @@ import { mongoose } from "mongoose";
 import DiaryEntry from "../models/DiaryEntry.js";
 import { fetchWeather } from "./weatherController.js";
 
-// const createEntry = async (req, res) => {
-//   try {
-//     const { title, content, reflection, tags, location } = req.body;
-//     // Fetch weather data if location is provided
-//     const weatherData = location ? await fetchWeather(location) : null;
-//     const newEntry = new DiaryEntry({
-//       user: req.user.id, // authentication is added in Part 2
-//       title,
-//       content,
-//       reflection,
-//       tags,
-//       location,
-//       weather: weatherData,
-//     });
-//     await newEntry.save();
-//     res.status(201).json(newEntry);
-//   } catch (error) {
-//     res.status(400).json({ message: error.message });
-//   }
-// };
-
 /**
  * @route POST /api/diary
  * @desc Create a new diary entry
@@ -41,9 +20,7 @@ const testUser = new mongoose.Types.ObjectId();
 const createEntry = async (req, res) => {
   try {
     // TODO: Implement the function
-    const { user, title, content, reflection, location, tags } =
-      req.body;
-
+    const { user, title, content, reflection, location, tags } = req.body;
 
     // fetch weather data if location is provided
     const weatherData = location ? await fetchWeather(location) : null;
@@ -59,8 +36,7 @@ const createEntry = async (req, res) => {
     });
 
     await newEntry.save();
-	res.status(201).json(newEntry);
-
+    res.status(201).json(newEntry);
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
@@ -79,6 +55,24 @@ const createEntry = async (req, res) => {
  */
 const updateEntry = async (req, res) => {
   // TODO: Implement the function
+  const { title, content, reflection, tags, location } = req.body;
+
+  try {
+    const entry = await DiaryEntry.findById(req.params.id);
+
+    title ? (entry.title = title) : entry.title;
+    content ? (entry.content = content) : entry.content;
+    reflection ? (entry.reflection = reflection) : entry.reflection;
+    tags ? (entry.tags = tags) : entry.tags;
+    location ? (entry.location = location) : entry.location;
+
+    await entry.save();
+    res.status(200).json(entry);
+  } catch (error) {
+    res
+      .status(400)
+      .send("Diary entry could not be found");
+  }
 };
 
 /**
@@ -93,6 +87,17 @@ const updateEntry = async (req, res) => {
  */
 const deleteEntry = async (req, res) => {
   // TODO: Implement the function
+  try {
+	const entry = await DiaryEntry.findByIdAndDelete(req.params.id);
+	console.log(entry);
+	if(!entry) {
+		return res.status(400).send("Bad Request: Diary entry not found");
+	}
+	
+	res.status(200).send("Diary entry successfully deleted");
+  } catch (error) {
+	res.status(400).send("Bad Request: Diary entry could not be found");
+  }
 };
 
 /**
