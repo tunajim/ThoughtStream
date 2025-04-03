@@ -30,6 +30,19 @@ router.get("/:id", getEntryById);
 
 router.post("/", createEntry);
 
+/**
+ * @route PUT /api/diary/:id
+ * @desc Update a specific diary entry by ID
+ */
+
+router.put("/:id", updateEntry);
+
+/**
+ * @route DELETE /api/diary/:id
+ * @desc Delete a specific diary entry by ID
+ */
+
+router.delete("/:id", deleteEntry);
 
 
 
